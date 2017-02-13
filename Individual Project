@@ -1,0 +1,301 @@
+Message1="THIS IS THE TIC TAC TOE GAME!"
+print('{:^80}'.format(Message1))
+      
+print(" It is owned by Plamen Atanasov!")
+print()
+print("You can choose either to play versus the computer")
+print("or to play versus another human player! :)")
+print("To save the game while playing, you have to type: save")
+print("If you wish to load a saved game, type: load")
+print("Please note that the game can only be saved if you are playing human vs human")
+print()
+
+import pickle
+import random
+import os.path
+
+board = [" "," "," "," "," "," "," "," "," "]
+
+def keypad():
+        """
+        PRINTS KEYPAD INSTRUCTIONS
+
+        """
+        print("You have to USE the KEYPAD!!")
+        print()
+        print("1 | 2 | 3 ")
+        print("4 | 5 | 6 ")
+        print("7 | 8 | 9 ")
+        print()
+def printboard(board):
+        """
+        PRINTS THE BOARD IN A NICE, BEAUTIFUL WAY
+        
+        """
+        for i in range(0,9,3):
+                print(" | ".join(board[i:i+3]))  #Prints the board in a nice way!
+
+def boardcheck(board):
+        """
+        COUNT NUMBER OF MOVES A PLAYER HAS MADE.
+        AND THEN YOU CAN USE THAT TO CALCULATE WHOSE TURN IS.
+        WETHER IT IS "O" OR "X", AFTER THE GAME IS BEING SAVED.
+        
+        """
+        counter=0
+        counter1=0
+        for i in range(0,9):
+                 if board[i]=="X":
+                        counter=counter+1
+            
+                 elif board[i]=="O":
+                        counter1=counter1+1
+                        
+        if counter>counter1:
+                return "O"
+        else:
+                return "X"
+
+                
+Name2=input("To load a saved game, type: load, to start a new game press Enter: ")
+
+if Name2=="load":
+        if os.path.exists("SavedGame.txt"):   #Checks if the file exists or not!
+           file=open("SavedGame.txt", "rb")
+           board=pickle.load(file)
+           print("Your game has been successfully loaded!")
+           keypad()
+           print()
+           print("Here is where you are up to:")
+           print()
+           printboard(board)
+        elif os.path.exists("SavedGame.txt")== False:
+                print("File does not exists")
+                NewGame=input("To start a new game, please press Enter...")
+if Name2!="load" or os.path.exists("SavedGame.txt")== False:
+        
+        Name1=input("To play versus a friend type: yes, to play versus the computer type: pc         (type yes or pc): ")
+        Name2=str(Name1)
+
+        while Name2 != "yes" and Name2 != "pc": # Checks for wrong entries! 
+                Name1=input("Wrong entries, please type again (Type yes or pc) ") 
+                Name2=str(Name1)
+        
+        if Name2 == "pc":
+                global PlayerName
+                print()
+                print("You have chosen to play versus the computer!")
+                print()
+                PlayerName=input("What is your name? ")
+                
+        if Name2 == "yes":
+                Player1=input("What is the name of the first player? ")
+                Player2=input("What is the name of the second player? ")
+                lst1=[Player1,Player2]
+                Play2=random.choice(lst1) #Check whose turn is 
+                print()
+                print(Play2+ " plays first, with the X!")
+                keypad()
+
+
+
+
+print ()
+
+        
+
+
+def checkIfwins(value):
+        """
+        CHECKS BOARD SPOTS FOR A WINNER.
+        :returns: RETURNS TRUE IF SOME OF THE USER WON THE GAME
+        
+        """
+        if (board[0]==value and board[3]==value and board[6]==value) or (board[1]==value and board[4]==value and board[7]==value) or (board[2]==value and board[5]==value and board[8]==value):
+               return True
+        if (board[0]==value and board[1]==value and board[2]==value) or (board[3]==value and board[4]==value and board[5]==value) or (board[6]==value and board[7]==value and board[8]==value):
+                return True
+        if (board[0]==value and board[4]==value and board[8]==value) or (board[2]==value and board[4]==value and board[6]==value):
+                return True
+        return False
+
+def checkrangeandspot(Inpt): # checks for a free spot
+
+    return (Inpt>=0 and Inpt<=8) and (board[Inpt]!="X" and board[Inpt]!="O")
+                
+
+
+def defend(board):
+        for i in range(0,7,3):
+                counter = 0
+                var = None
+                for j in range(i,i+3):
+                        if board[j]== "X":
+                                counter=counter+1
+                        if board[j]==" ":
+                                var = j
+                if counter == 2 and var:
+                        return var
+        
+        for i in range(0,3,1):
+                counter=0
+                var = None
+                for j in range(i,i+7,3):
+                
+                        if board[j] == "X":
+                                counter = counter + 1
+                        if board[j]== " ":
+                                var = j
+                if counter == 2 and var:
+                        return var
+
+     
+def compattack():
+        if checkrangeandspot(4):
+                board[4]=player
+                printboard(board)
+        elif checkrangeandspot(0):
+                board[0]=player
+                printboard(board)
+        elif checkrangeandspot(2):
+                board[2]=player
+                printboard(board)
+        elif checkrangeandspot(6):
+                board[6]=player
+                printboard(board)
+        elif checkrangeandspot(8):
+                board[8]=player
+                printboard(board)
+        
+        else:
+                
+                while True:
+                        Inpt1=random.randint(0,8) #Computer generates a number by a random way
+                        if checkrangeandspot(Inpt1):
+                                board[Inpt1]=player
+                                printboard(board)
+                                print()
+                                return True
+                        else:
+                                continue
+
+if Name2=="pc":
+        keypad()
+        game = False
+        while not game:
+                player = "X"
+                while True:
+                        
+                        Inpt=input(PlayerName + ", choose a spot: ")
+                        if Inpt.isdigit(): #Checks wether the input is integer or not
+                                Inpt=int(Inpt)-1
+                                break
+                        else:
+                                continue
+
+                             
+                if checkrangeandspot(Inpt):
+                        board[Inpt]=player
+                        printboard(board)
+                        print()
+                else:
+                        continue
+                        
+                if checkIfwins("O"):
+
+                        print("The computer won! Sorry :)")
+                        holdscreen=input("Press Enter to exit...")
+                        break
+                elif checkIfwins("X"):
+                        print(PlayerName+ " win this game, congratz!")
+                        holdscreen=input("Press Enter to exit...")
+                        break
+                
+                
+                if " " not in board:
+                        print("It's a draw!")
+                        holdscreen=input("Press Enter to exit...")
+                        break
+                
+                player = "O"
+                
+                protect = defend(board)
+                if protect is not None:
+                        board[protect]=player
+                        printboard(board)
+                else:
+                         compattack()
+                        
+
+
+                        
+                if checkIfwins("O"):
+
+                        print("The computer won! Sorry :)")
+                        holdscreen=input("Press Enter to exit...")
+                        break
+                elif checkIfwins("X"):
+                        print(PlayerName+ " win this game, congratz!")
+                        holdscreen=input("Press Enter to exit...")
+                        break
+                elif " " not in board:
+                        print("It's a draw!")
+                        holdscreen=input("Press Enter to exit...")
+                        break  
+                else:
+                        continue
+                
+player="X"
+def swapplayer(): #Swaps the turns
+        """
+        SWAPS THE PLAYERS AFTER ONE OF THEM HAS MADE HIS TURN
+        
+        """
+        global player
+        if player == "X":
+                player="O"
+        else:
+                player="X"
+
+
+               
+if (Name2=="yes" or Name2=="load"):
+        gameover = False
+        while not gameover:
+                player = boardcheck(board)
+
+                while True:
+                        Inpt=input("Player "+player+", choose a spot or type save: ")
+                        
+                        if Inpt=="save" or Inpt.isdigit(): 
+                                break
+                        
+                if Inpt == "save":
+                        f=open("SavedGame.txt", "wb")
+                        pickle.dump(board, f)
+                        f.close()
+                        print("Your game has been successfully saved!")
+                        holdscreen=input("Press Enter to exit...")
+                        break
+
+                else:
+                        Inpt=int(Inpt)-1
+                             
+                if checkrangeandspot(Inpt):
+                        board[Inpt] = player
+                        printboard(board)
+                else:
+                        continue
+
+                if checkIfwins(player):
+                        print("Player", player, "wins! Congratz!")
+                        holdscreen=input("Press Enter to exit...")
+                        break
+
+                if " " not in board:
+                        print("It's a draw!")
+                        holdscreen=input("Press Enter to exit...")
+                        gameover = True
+
+                swapplayer()
+
